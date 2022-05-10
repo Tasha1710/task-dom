@@ -5,6 +5,10 @@
   Считаем, что всегда передается тег, допускающий вставку текста в качестве своего содержимого (P, DIV, I и пр.).
 */
 export function appendToBody(tag, content, count) {
+    let list = document.body;
+    for (let i = 0; i < count; i++) {
+        list.insertAdjacentHTML('afterbegin', `<${tag}>${content}</${tag}>`);
+    }
 }
 
 /*
@@ -15,6 +19,17 @@ export function appendToBody(tag, content, count) {
   Сформированное дерево верните в качестве результата работы функции.
 */
 export function generateTree(childrenCount, level) {
+    function plusOne(count, step) {
+        let foundation = document.createElement('div');
+        foundation.classList = `item_${step}`;
+        if (step < level) {
+            for (let i = 0; i < count; i++) {
+                foundation.appendChild(plusOne(childrenCount, step + 1));
+            }
+        }
+        return foundation;
+    }
+    return plusOne(childrenCount, 1);
 }
 
 /*
@@ -26,4 +41,27 @@ export function generateTree(childrenCount, level) {
   Сформированное дерево верните в качестве результата работы функции.
 */
 export function replaceNodes() {
+    function newDiv(step) {
+        let currentDiv = document.createElement('div');
+        currentDiv.classList = `item_${step}`;
+        if (step < 3) {
+            for (let i = 1; i <= 2; i++) {
+                currentDiv.appendChild(newDiv(step + 1));
+            }
+        }
+        return currentDiv;
+    }
+
+    function replacementForTag(element) {
+        if (element.className == 'item_2') {
+            let section = document.createElement('section');
+            section.classList = 'item_2';
+            section.innerHTML = element.innerHTML;
+            element.replaceWith(section);
+        }
+    }
+
+    let knot = newDiv(1);
+    knot.childNodes.forEach(replacementForTag);
+    return knot;
 }
